@@ -1,47 +1,34 @@
 const state = {
   token: '',
-  name: '张三',
+  username: '张三',
   avatar: '',
-  introduction: '',
-  roles: []
+  desc: ''
 }
-
 const mutations = {
-  SET_TOKEN: (state, token) => {
-    state.token = token
+  setName (state, data) {
+    state.username = data
+    console.log(data)
   },
-  SET_INTRODUCTION: (state, introduction) => {
-    state.introduction = introduction
+  saveUserInfo (state, data) {
+    state.token = data.token
+    state.username = data.username
+    state.avatar = data.avatar
+    state.desc = data.desc
   },
-  SET_NAME: (state, name) => {
-    state.name = name
-    console.log(name)
-  },
-  SET_AVATAR: (state, avatar) => {
-    state.avatar = avatar
-  },
-  SET_ROLES: (state, roles) => {
-    state.roles = roles
+  removeUserInfo (state) {
+    state.token = ''
+    state.username = ''
+    state.avatar = ''
+    state.desc = ''
   }
 }
-
 const actions = {
-  // user login
-  login ({ commit }, userInfo) {
-    console.log(111)
-  },
-
-  // get user info
-  getInfo ({ commit, state }) {
-    console.log(222)
-  },
-
-  // user logout
-  logout ({ commit, state, dispatch }) {
-    console.log(3333)
+  FedLogOut () {
+    // 这里处理退出的操作，
+    // 比如清除token,清除用户信息,回到登陆页
+    console.log('退出')
   }
 }
-
 export default {
   namespaced: true,
   state,

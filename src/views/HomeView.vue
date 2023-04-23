@@ -9,22 +9,28 @@
 <script>
 // @ is an alias to /src
 import HelloWorld from '@/components/HelloWorld.vue'
-import { mapState, mapMutations } from 'vuex'
+import { mapState, mapMutations, mapActions } from 'vuex'
 
 export default {
   name: 'HomeView',
   computed: {
     ...mapState('user', {
-      name: 'name'
+      username: 'username'
     })
   },
   created () {
-    console.log(this.name)
+    console.log(this.username)
+    console.log(this.$store.state.user.username)
     this.setName('李四')
+    this.generateRoutes()
+    this.$store.dispatch('permission/generateRoutes')
   },
   methods: {
     ...mapMutations('user', {
-      setName: 'SET_NAME'
+      setName: 'setName'
+    }),
+    ...mapActions('permission', {
+      generateRoutes: 'generateRoutes'
     })
   },
   components: {
