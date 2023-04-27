@@ -2,42 +2,24 @@
   <div class="home">
     <div>
       <van-form @submit="onSubmit">
-        <van-field v-model="username" name="用户名" label="用户名" placeholder="用户名" :rules="[{ required: true, message: '请填写用户名' }]" />
-        <van-field v-model="password" type="password" name="密码" label="密码" placeholder="密码" :rules="[{ required: true, message: '请填写密码' }]" />
-        <van-field name="switch" label="开关">
-          <template #input>
-            <van-switch v-model="switchChecked" size="20" />
-          </template>
-        </van-field>
-        <van-field name="checkbox" label="复选框">
-          <template #input>
-            <van-checkbox v-model="checkbox" shape="square" />
-          </template>
-        </van-field>
-        <van-field name="checkboxGroup" label="复选框组">
-          <template #input>
-            <van-checkbox-group v-model="checkboxGroup" direction="horizontal">
-              <van-checkbox name="1" shape="square">复选框 1</van-checkbox>
-              <van-checkbox name="2" shape="square">复选框 2</van-checkbox>
-            </van-checkbox-group>
-          </template>
-        </van-field>
-        <van-field name="rate" label="评分">
-          <template #input>
-            <van-rate v-model="rate" />
-          </template>
-        </van-field>
-        <van-field name="slider" label="滑块">
-          <template #input>
-            <van-slider v-model="slider" />
-          </template>
-        </van-field>
-        <van-field name="uploader" label="文件上传">
+        <van-field v-model="username" name="姓名" label="姓名" placeholder="姓名" :rules="[{ required: true, message: '请填写用户名' }]" />
+        <van-field readonly clickable name="picker" :value="value" label="性别" placeholder="点击选择性别" @click="showPicker = true" />
+        <van-field v-model="userphone" name="手机" label="手机" placeholder="手机" :rules="[{ required: true, message: '请填写手机' }]" />
+        <van-field v-model="password" type="password" name="身份证" label="身份证" placeholder="身份证" :rules="[{ required: true, message: '请填写身份证' }]" />
+        <van-field name="uploader" label="头像上传">
           <template #input>
             <van-uploader v-model="uploader" />
           </template>
         </van-field>
-        <van-field readonly clickable name="picker" :value="value" label="选择器" placeholder="点击选择城市" @click="showPicker = true" />
+        <van-field name="uploader" label="位置信息">
+          <template #input>
+            <div class="get_user_postion" @click="getUserPostion">获取位置信息</div>
+            <div v-if="location.length">
+              {{ location }}
+            </div>
+          </template>
+        </van-field>
+
         <van-popup v-model="showPicker" position="bottom">
           <van-picker show-toolbar :columns="columns" @confirm="onConfirm" @cancel="showPicker = false" />
         </van-popup>
@@ -54,19 +36,33 @@ export default {
   data() {
     return {
       username: '',
+      userphone: '',
       password: '',
       switchChecked: false,
       checkbox: false,
       checkboxGroup: [],
       rate: 3,
       slider: 50,
-      uploader: [{ url: 'https://img01.yzcdn.cn/vant/leaf.jpg' }],
+      uploader: [],
       value: '',
-      columns: ['杭州', '宁波', '温州', '嘉兴', '湖州'],
-      showPicker: false
+      columns: ['男', '女'],
+      showPicker: false,
+      location: []
     };
   },
+  created() {},
   methods: {
+    getUserPostion() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function (position) {
+          location[0] = position.coords.longitude;
+          location[1] = position.coords.latitude;
+          console.log(location);
+        });
+      } else {
+        alert('您的设备不支持定位功能');
+      }
+    },
     onSubmit(values) {
       console.log('submit', values);
       this.$dialog
@@ -86,3 +82,10 @@ export default {
   }
 };
 </script>
+<style lang="less" scoped>
+.home {
+  .get_user_postion {
+    border: 1px solid #0094ff;
+  }
+}
+</style>
