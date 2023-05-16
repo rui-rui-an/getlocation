@@ -11,15 +11,21 @@
             <van-uploader v-model="uploader" />
           </template>
         </van-field>
-        <van-field name="uploader" label="位置信息">
+        <van-field name="uploader" label="js自带获取位置信息">
           <template #input>
-            <div class="get_user_postion" @click="getUserPostion">获取位置信息</div>
-            <div v-if="location.length">
-              {{ location }}
-            </div>
+            <van-button class="get_user_postion" @click="getUserPostion">js自带获取位置信息</van-button>
           </template>
         </van-field>
-
+        <div v-if="location.length">
+          {{ location }}
+        </div>
+        <van-field name="uploader" label="百度地图获取位置信息">
+          <template #input>
+            <!-- <van-button type="primary">Primary</van-button> -->
+            <van-button class="get_user_postion" @click="getUserPostionFromBaidu">百度地图获取位置信息</van-button>
+          </template>
+        </van-field>
+        <div v-if="Baidulocation.length">{{ currCity }} {{ Baidulocation }}</div>
         <van-popup v-model="showPicker" position="bottom">
           <van-picker show-toolbar :columns="columns" @confirm="onConfirm" @cancel="showPicker = false" />
         </van-popup>
@@ -47,20 +53,56 @@ export default {
       value: '',
       columns: ['男', '女'],
       showPicker: false,
-      location: []
+      location: [],
+      currCity: '',
+      Baidulocation: [],
+      isShow: true
     };
   },
   created() {},
+  mounted() {},
   methods: {
+    getUserPostionFromBaidu() {
+      this.$toast.loading({
+        duration: 0, // continuous display toast
+        message: 'Loading...',
+        forbidClick: true
+      });
+      // 获取当前城市
+      const geolocation = new window.BMap.Geolocation();
+      geolocation.getCurrentPosition((r) => {
+        console.log(r);
+        const city = r.address.city; // 返回当前城市
+        this.currCity = city;
+        this.$set(this.Baidulocation, 0, r.longitude);
+        this.$set(this.Baidulocation, 1, r.latitude);
+        this.$toast.clear();
+      });
+    },
     getUserPostion() {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function (position) {
-          location[0] = position.coords.longitude;
-          location[1] = position.coords.latitude;
-          console.log(location);
-        });
-      } else {
-        alert('您的设备不支持定位功能');
+      this.$toast.loading({
+        message: 'Loading...',
+        forbidClick: true
+      });
+      try {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition((position) => {
+            console.log(position);
+            this.location[0] = position.coords.longitude;
+            this.location[1] = position.coords.latitude;
+            this.$set(this.location, 0, position.coords.longitude);
+            this.$set(this.location, 1, position.coords.latitude);
+            this.$toast.clear();
+          });
+          console.log(this.location);
+        } else {
+          alert('您的设备不支持定位功能');
+          this.$toast.clear();
+        }
+      } catch (error) {
+        console.log(error);
+        this.$toast.clear();
+        this.$toast(error);
       }
     },
     onSubmit(values) {
